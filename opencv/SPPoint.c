@@ -10,11 +10,11 @@
 #include <math.h>
 
 
-typedef struct sp_point_t {
+struct sp_point_t {
     double *data;
     int index;
     int dim;
-} SPPoint;
+};
 
 SPPoint *spPointCreate(double *data, int dim, int index) {
     if (data == NULL)
@@ -36,7 +36,7 @@ SPPoint *spPointCopy(SPPoint *source) {
     return spPointCreate(source->data,
                          source->dim,
                          source->index);
-};
+}
 
 void spPointDestroy(SPPoint *point) {
     free(point->data);
