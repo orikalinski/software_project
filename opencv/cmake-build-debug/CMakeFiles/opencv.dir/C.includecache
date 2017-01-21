@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ori/ClionProjects/opencv/SPPoint.c
+stdio.h
+-
+stdlib.h
+-
+SPPoint.h
+/home/ori/ClionProjects/opencv/SPPoint.h
+assert.h
+-
+string.h
+-
+math.h
+-
+
+/home/ori/ClionProjects/opencv/SPPoint.h
+
