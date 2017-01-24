@@ -1,7 +1,4 @@
-#include <iostream>
-#include "SPPoint.h"
-#include "sp_image_proc_util.h"
-#include <unistd.h>
+#include "main_aux.h"
 
 struct sp_point_t {
     double *data;
@@ -9,45 +6,78 @@ struct sp_point_t {
     int dim;
 };
 
+int main(){
+    printf("Enter images directory path:\n");
+    std::string imagesDirectory;
+    std::getline (std::cin, imagesDirectory);
 
-int main() {
-    const  char* str1 = "./images/img1.png";
-    const  char* str2 = "./images/img2.png";
-    SPPoint **a = spGetRGBHist(str1, 1, 4);
-    SPPoint **b = spGetRGBHist(str2, 2, 4);
-//    const  char* str7 = "./images/img   7.png";
+    printf("Enter images prefix:\n");
+    std::string imagesPrefix;
+    std::getline (std::cin, imagesPrefix);
+
+    printf("Enter number of images:\n");
+    int numberOfImages;
+    std::cin >> numberOfImages;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    if (numberOfImages < 1)
+        printf("An error occurred - invalid number of images\n"); // free all allocations
+
+    printf("Enter images suffix:\n");
+    std::string imagesSuffix;
+    std::getline (std::cin, imagesSuffix);
+
+    printf("Enter number of bins:\n");
+    int numberOfBins;
+    std::cin >> numberOfBins;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    if (numberOfBins < 1 || numberOfBins > 255)
+        printf("An error occurred - invalid number of bins\n"); // free al allocations
+
+    printf("Enter number of features:\n");
+    int numberOfFeaturesToExtract;
+    std::cin >> numberOfFeaturesToExtract;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    if (numberOfFeaturesToExtract < 1)
+        printf("An error occurred - invalid number of features\n"); // free all allocations
+
+    // calculate RGB histogram and siftDesrcriptors for each image.
     int *nFeatures = (int *)malloc(sizeof(int));
-    SPPoint **siftDescriptors = spGetSiftDescriptors(str1, 7, 700, nFeatures);
-    printf("answer1: %f\n", spRGBHistL2Distance(a, b));
-    printf("answer2: %d, %f\n", *nFeatures, siftDescriptors[3]->data[4]);
-    int size;
-    const char* fileNames[5];
-    fileNames[0] = "./images/img0.png";
-    fileNames[1] = "./images/img1.png";
-    fileNames[2] = "./images/img2.png";
-    fileNames[3] = "./images/img3.png";
-    fileNames[4] = "./images/img4.png";
-    for (int i = 0;i<5; i++) {
-        printf("str: %s\n", fileNames[i]);
-        siftDescriptors = spGetSiftDescriptors(fileNames[i], i, 10000, nFeatures);
-        size += *nFeatures * sizeof(SPPoint *);
-        printf("size: %d\n", size);
-    }
-    sleep(5);
-    SPPoint ***databaseFeatures = (SPPoint ***)malloc(size);
-    int *nFeaturesPerImage = (int *)calloc(5, sizeof(int));
-    for (int i = 0;i<5; i++) {
-        siftDescriptors = spGetSiftDescriptors(fileNames[i], i, 10000, nFeatures);
+    SPPoint ***RgbHist = (SPPoint ***)calloc(numberOfImages, sizeof(SPPoint **));
+    SPPoint ***descriptors = (SPPoint ***)calloc(numberOfImages, sizeof(SPPoint **));
+    int *nFeaturesPerImage = (int *)calloc(numberOfImages, sizeof(int));
+    std::string imagePath;
+    for (int i=0; i < numberOfImages; i++){
+        imagePath = imagesDirectory + imagesPrefix + std::to_string(i) + imagesSuffix;
+        cout << imagePath << "\n";
+        RgbHist[i] = spGetRGBHist(imagePath.c_str(), i, numberOfBins);
+        descriptors[i] = spGetSiftDescriptors(imagePath.c_str(), i, numberOfFeaturesToExtract, nFeatures);
         nFeaturesPerImage[i] = *nFeatures;
-        for (int j = 0; j < *nFeatures; j++){
-            databaseFeatures[i][j] = siftDescriptors[j];
+    }
+
+    printf("Enter a query image or # to terminate:\n");
+    std::string queryImagePath;
+    std::getline (std::cin, queryImagePath);
+    while (queryImagePath != "#") {
+        SPPoint **QRGBHist = spGetRGBHist(queryImagePath.c_str(), -1, numberOfBins);
+        SPPoint **QDesc = spGetSiftDescriptors(queryImagePath.c_str(), -1, numberOfFeaturesToExtract, nFeatures);
+        double *queryRGBtoImagesDistance = (double *) calloc(numberOfImages, sizeof(double));
+        for (int i = 0; i < numberOfImages; i++)
+            queryRGBtoImagesDistance[i] = spRGBHistL2Distance(QRGBHist, RgbHist[i]);
+        printf("Nearest images using global descriptors:\n");
+        printBestFive(queryRGBtoImagesDistance, numberOfImages, 1);
+        double *imagesHits = (double *) calloc(numberOfImages, sizeof(double));
+        int *bestSiftDistanceImageIndexes;
+        for (int i = 0; i < *nFeatures; i++) {
+            bestSiftDistanceImageIndexes = spBestSIFTL2SquaredDistance(5, QDesc[i], descriptors,
+                                                                       numberOfImages, nFeaturesPerImage);
+            for (int j = 0; j < 5; j++)
+                imagesHits[bestSiftDistanceImageIndexes[j]]++;
         }
+        printf("Nearest images using local descriptors:\n");
+        printBestFive(imagesHits, numberOfImages, -1);
+        printf("Enter a query image or # to terminate:\n");
+        std::getline (std::cin, queryImagePath);
     }
-    printf("size: %d\n", size);
-    int* kClosest = spBestSIFTL2SquaredDistance(10, databaseFeatures[3][100], databaseFeatures, 5, nFeaturesPerImage);
-    for (int i = 0;i < 10;i++){
-        printf("row: %d\n", kClosest[i]);
-    }
-    return -1;
+    printf("Exiting...\n");
 }
 

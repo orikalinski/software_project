@@ -1,0 +1,11 @@
+./images/
+img
+17
+.png
+16
+100
+./queryA.png
+./queryB.png
+./queryC.png
+./queryD.png
+#
