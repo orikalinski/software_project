@@ -75,7 +75,6 @@ int main(){
         }
         printf("Nearest images using local descriptors:\n");
         printBestFive(imagesHits, numberOfImages, -1);
-        printf("Enter a query image or # to terminate:\n");
         std::getline (std::cin, queryImagePath);
     }
     printf("Exiting...\n");

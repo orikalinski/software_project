@@ -1,5 +1,5 @@
 CC = gcc
-CPP = g++
+C++ = g++
 OBJS = main.o main_aux.o sp_image_proc_util.o SPPoint.o SPBPriorityQueue.o
 EXEC = ex3
 INCLUDEPATH=/usr/local/lib/opencv-3.1.0/include/
@@ -9,10 +9,10 @@ LIBS=-lopencv_xfeatures2d -lopencv_features2d \
 
 
 CPP_COMP_FLAG = -std=c++11 -Wall -Wextra \
--Werror -pedantic-errors -DNDEBUG
+-Werror -pedantic-errors -DNDEBUG -g
 
 C_COMP_FLAG = -std=c99 -Wall -Wextra \
--Werror -pedantic-errors -DNDEBUG
+-Werror -pedantic-errors -DNDEBUG -g
 
 $(EXEC): $(OBJS)
 	$(C++) $(OBJS) -L$(LIBPATH) $(LIBS) -o $@

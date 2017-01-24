@@ -63,7 +63,6 @@ double spRGBHistL2Distance(SPPoint** rgbHistA, SPPoint** rgbHistB){
     return avgL2;
 }
 
-
 SPPoint** spGetSiftDescriptors(const char* str, int imageIndex,
                                int nFeaturesToExtract, int* nFeatures) {
     cv::Mat image = cv::imread(str, CV_LOAD_IMAGE_GRAYSCALE);
@@ -83,7 +82,7 @@ SPPoint** spGetSiftDescriptors(const char* str, int imageIndex,
     for (int i = 0;i < descriptors.rows; i++){
         result[i] = spPointCreate(emptyData, 128, imageIndex);
         for (int j = 0; j < 128; j++){
-            result[i]->data[j] = descriptors.at<double>(i, j);
+            result[i]->data[j] = (double) descriptors.at<float>(i, j);
         }
     }
 
