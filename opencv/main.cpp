@@ -76,7 +76,31 @@ int main(){
         printf("Nearest images using local descriptors:\n");
         printBestFive(imagesHits, numberOfImages, -1);
         std::getline (std::cin, queryImagePath);
+        free(imagesHits); // ******************** maybe out of the loop
+        free (queryRGBtoImagesDistance); // ********************
     }
+    free(nFeatures); // ********************
+    free(nFeaturesPerImage); // ********************
+    // free the RgbHist
+    for (int i=0;i< numberOfImages;i++){
+        for (int j=0;j<3;j++){
+            spPointDestroy(RgbHist[i][j]);
+        }
+    }free(RgbHist); // ******************** to check if needed to free the 2nd dimension
+    // free the descriptors
+    for (int i=0;i<numberOfImages;i++){
+        for (int j=0;j<descriptors[i].rows;j++){
+            spPointDestroy(descriptors[i][j]);
+        }
+    }free(descriptors); // ******************** to check if needed to free the 2nd dimension
+    // free QRGBHist
+    for (int i=0;i<3;i++){
+        spPointDestroy(QRGBHist[i]);
+    }free(QRGBHist); // ********************
+    // free QDesc
+    for (int k = 0; k < descriptors.rows ; k++) {
+        spPointDestroy(QDesc[k]);
+    }free(QDesc); // ********************
     printf("Exiting...\n");
 }
 
