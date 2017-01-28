@@ -5,7 +5,6 @@
 #include "sp_image_proc_util.h"
 #include <iostream>
 #include <opencv/cv.h>
-#include <opencv2/core.hpp>
 #include <opencv2/features2d.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
@@ -19,17 +18,17 @@ extern "C"{
 using namespace std;
 using namespace cv;
 
-struct sp_point_t {
-    double *data;
-    int index;
-    int dim;
-};
-
 SPPoint **spGetRGBHist(const char* str, int imageIndex, int nBins) {
     SPPoint **colorsHistograms = (SPPoint **)calloc(3, sizeof(SPPoint *));
-    double *emptyData = (double *)calloc(nBins, sizeof(double));
+    double *emptyData;
+    if ((emptyData = (double *)calloc(nBins, sizeof(double))) == NULL)
+        return NULL;
     for (int i = 0; i < 3; i++){
-        colorsHistograms[i] = spPointCreate(emptyData, nBins, imageIndex);
+        if ((colorsHistograms[i] = spPointCreate(emptyData, nBins, imageIndex)) == NULL){
+            for (int j = 0; j < i; j++)
+                spPointDestroy(colorsHistograms[j]);
+            return NULL;
+        }
     }
     free(emptyData);
     Mat image = imread(str, CV_LOAD_IMAGE_COLOR);
@@ -48,10 +47,11 @@ SPPoint **spGetRGBHist(const char* str, int imageIndex, int nBins) {
     calcHist( &bgr_planes[1], 1, 0, Mat(), g_hist, 1, &nBins, &histRange, uniform, accumulate);
     calcHist( &bgr_planes[2], 1, 0, Mat(), r_hist, 1, &nBins, &histRange, uniform, accumulate);
     for (int i = 0; i < nBins; i++){
-        colorsHistograms[0]->data[i] = (double)(cvRound(r_hist.at<float>(i)));
-        colorsHistograms[1]->data[i] = (double)(cvRound(g_hist.at<float>(i)));
-        colorsHistograms[2]->data[i] = (double)(cvRound(b_hist.at<float>(i)));
+        spPointSetData(colorsHistograms[0], i, (double)(cvRound(r_hist.at<float>(i))));
+        spPointSetData(colorsHistograms[1], i, (double)(cvRound(g_hist.at<float>(i))));
+        spPointSetData(colorsHistograms[2], i, (double)(cvRound(b_hist.at<float>(i))));
     }
+
     return colorsHistograms;
 }
 
@@ -66,6 +66,11 @@ double spRGBHistL2Distance(SPPoint** rgbHistA, SPPoint** rgbHistB){
 SPPoint** spGetSiftDescriptors(const char* str, int imageIndex,
                                int nFeaturesToExtract, int* nFeatures) {
     cv::Mat image = cv::imread(str, CV_LOAD_IMAGE_GRAYSCALE);
+    if(! image.data )                              // Check for invalid input
+    {
+        cout <<  "Could not open or find the image" << str << std::endl ;
+        return NULL;
+    }
     std::vector<cv::KeyPoint> keypoints;
     cv::Mat descriptors;
     cv::Ptr<cv::xfeatures2d::SiftDescriptorExtractor> detect =
@@ -75,14 +80,19 @@ SPPoint** spGetSiftDescriptors(const char* str, int imageIndex,
     detect->compute(image, keypoints, descriptors);
 
     *nFeatures = descriptors.rows;
-
-    SPPoint** result = (SPPoint**)malloc(sizeof(SPPoint*) * descriptors.rows);
+    SPPoint** result;
+    if((result = (SPPoint**)malloc(sizeof(SPPoint*) * descriptors.rows)) == NULL)
+        return NULL;
 
     double emptyData[128];
     for (int i = 0;i < descriptors.rows; i++){
-        result[i] = spPointCreate(emptyData, 128, imageIndex);
+        if ((result[i] = spPointCreate(emptyData, 128, imageIndex)) == NULL){
+            for (int j = 0; j < i; j++)
+                spPointDestroy(result[j]);
+            return NULL;
+        }
         for (int j = 0; j < 128; j++){
-            result[i]->data[j] = (double) descriptors.at<float>(i, j);
+            spPointSetData(result[i], j, (double) descriptors.at<float>(i, j));
         }
     }
 
@@ -91,10 +101,21 @@ SPPoint** spGetSiftDescriptors(const char* str, int imageIndex,
 
 int* kClosestPointToQ(int n, int k, SPPoint** points, SPPoint* q){
 
-    BPQueueElement *tmp = (BPQueueElement *) malloc(sizeof(BPQueueElement));
+    BPQueueElement *tmp;
+    if ((tmp = (BPQueueElement *) malloc(sizeof(BPQueueElement))) == NULL)
+        return NULL;
 
-    int *kClosest = (int *) calloc(k, sizeof(int));
-    SPBPQueue *queue = spBPQueueCreate(n);
+    int *kClosest;
+    if ((kClosest = (int *) calloc(k, sizeof(int))) == NULL) {
+        free(tmp);
+        return NULL;
+    }
+    SPBPQueue *queue;
+    if ((queue = spBPQueueCreate(n)) == NULL){
+        free(tmp);
+        free(kClosest);
+        return NULL;
+    }
     for (int i = 0; i < n; i++) {
         int index = spPointGetIndex(points[i]);
         double distance = spPointL2SquaredDistance(points[i], q);
@@ -117,7 +138,9 @@ int* spBestSIFTL2SquaredDistance(int kClosest, SPPoint* queryFeature,
     int numberOfFeatures = 0;
     for (int i = 0; i < numberOfImages; i++)
         numberOfFeatures += nFeaturesPerImage[i];
-    SPPoint **flattenPoints = (SPPoint **)calloc(numberOfFeatures, sizeof(SPPoint *));
+    SPPoint **flattenPoints;
+    if ((flattenPoints = (SPPoint **)calloc(numberOfFeatures, sizeof(SPPoint *))) == NULL)
+        return NULL;
     int k = 0;
     for (int i = 0; i < numberOfImages; i++){
         for (int j = 0; j < nFeaturesPerImage[i]; j++){
@@ -125,6 +148,11 @@ int* spBestSIFTL2SquaredDistance(int kClosest, SPPoint* queryFeature,
             k++;
         }
     }
-
-    return kClosestPointToQ(numberOfFeatures, kClosest, flattenPoints, queryFeature);
+    int *results;
+    if ((results = kClosestPointToQ(numberOfFeatures, kClosest, flattenPoints, queryFeature)) == NULL){
+        free(flattenPoints);
+        return NULL;
+    }
+    free(flattenPoints);
+    return results;
 }

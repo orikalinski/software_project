@@ -114,4 +114,8 @@ double spPointL2SquaredDistance(SPPoint* p, SPPoint* q);
  */
 double spPointSizeOf();
 
+void spPointSetIndex(SPPoint *point, int index);
+
+void spPointSetData(SPPoint *point, int i, double value);
+
 #endif /* SPPOINT_H_ */

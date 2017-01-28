@@ -70,3 +70,11 @@ double spPointL2SquaredDistance(SPPoint *p, SPPoint *q) {
 double spPointSizeOf(){
     return sizeof(SPPoint);
 }
+
+void spPointSetIndex(SPPoint *point, int index) {
+    point->index = index;
+}
+
+void spPointSetData(SPPoint *point, int i, double value) {
+    point->data[i] = value;
+}
