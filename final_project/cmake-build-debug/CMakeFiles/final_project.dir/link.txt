@@ -1,0 +1,1 @@
+/usr/bin/cc  -g   CMakeFiles/final_project.dir/main.c.o CMakeFiles/final_project.dir/SPConfig.c.o  -o final_project 
