@@ -7,9 +7,14 @@
 #include <stdio.h>
 #include <string.h>
 
-int main() {
+int main(int argc, char *argv[]) {
     SP_CONFIG_MSG a;
-    SPConfig config = spConfigCreate("/home/ori/ClionProjects/final_project/conf.config", &a);
+    if ((argc == 3 && strcmp(argv[1], "-c")) || (argc != 1 && argc != 3)){
+        printf("Invalid command line : use -c <config_filename>");
+        return 1;
+    }
+    char *filename = argc == 1 ? "spcbir.config" : argv[2];
+    SPConfig config = spConfigCreate(filename, &a);
     spConfigDestroy(config);
     return 0;
 }
