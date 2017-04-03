@@ -1,7 +1,0 @@
-Full Name 1: Ori Kalinski
-Id No 1: 203515598
-User Name 1: orikalinski
-Full Name 2: Tomer Epshtein
-Id No 2: 313200750
-User Name 2: tomere1
-Assignment No: 2
