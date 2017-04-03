@@ -4,9 +4,11 @@
 CMakeFiles/opencv.dir/SPPoint.c.o: ../SPPoint.c
 CMakeFiles/opencv.dir/SPPoint.c.o: ../SPPoint.h
 
+CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: ../SPBPriorityQueue.h
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: ../SPPoint.h
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: ../sp_image_proc_util.cpp
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: ../sp_image_proc_util.h
+CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv/cv.h
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv/cxcore.h
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/calib3d.hpp
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/calib3d/calib3d_c.h
@@ -14,7 +16,6 @@ CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/core.
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/core/affine.hpp
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/core/base.hpp
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/core/bufferpool.hpp
-CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/core/core.hpp
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/core/core_c.h
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/core/cvdef.h
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/core/cvstd.hpp
@@ -39,7 +40,6 @@ CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/flann
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/hal.hpp
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/hal/defs.h
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/highgui.hpp
-CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/highgui/highgui.hpp
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/highgui/highgui_c.h
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/imgcodecs.hpp
 CMakeFiles/opencv.dir/sp_image_proc_util.cpp.o: /usr/local/include/opencv2/imgcodecs/imgcodecs_c.h

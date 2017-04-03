@@ -1,0 +1,9 @@
+./images/
+img
+2
+.png
+16
+100
+./queryA.png
+./queryB.png
+#
