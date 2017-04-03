@@ -1,0 +1,3 @@
+/home/ori/computer_sience/software_project/SPAssignment2/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/ori/computer_sience/software_project/SPAssignment2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/ori/computer_sience/software_project/SPAssignment2/cmake-build-debug/CMakeFiles/SP2.dir

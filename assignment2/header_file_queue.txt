@@ -1,0 +1,173 @@
+#ifndef SPBPRIORITYQUEUE_H_
+#define SPBPRIORITYQUEUE_H_
+#include <stdbool.h>
+
+/**
+ * SP Bounded Priority Queue summary
+ *
+ *   represetns a  bounded queue which contains elements which contains value and index 			//change ####################
+ *
+ * The following functions are supported:
+ *
+ * spBPQueueCreate	- Creates a new queue
+ * spBPQueueCopy		- Creates a new copy of a given queue
+ * spBPQueueDestroy	- Free all resources associated with a queue
+ * spBPQueueClear		-
+ * spBPQueueSize		- A getter of the number of elements in the queue.
+ * spBPQueueGetMaxSize	- A getter of the maximal number of elements which the queue can contains.
+ * spBPQueueEnqueue	- Adds an element to the queue 								//#######
+ * spBPQueueDequeue	- Removes The element with the biggest value in the queue if the queue isn't empty.
+ * spBPQueuePeek		-
+ * spBPQueuePeekLast	-
+ * spBPQueueMinValue	-
+ * spBPQueueMaxValue	-
+ * spBPQueueIsEmpty	- Returns True if the queue is empty,otherwise returns False.
+ * spBPQueueIsFull		- Returns True if the queue is full,otherwise returns False.
+ *
+ */
+
+
+/** type used to define Bounded priority queue **/
+typedef struct sp_bp_queue_t SPBPQueue;
+
+typedef struct sp_bpq_element_t {
+	int index;
+	double value;
+} BPQueueElement;
+
+/** type for error reporting **/
+typedef enum sp_bp_queue_msg_t {
+	SP_BPQUEUE_OUT_OF_MEMORY,
+	SP_BPQUEUE_FULL,
+	SP_BPQUEUE_EMPTY,
+	SP_BPQUEUE_INVALID_ARGUMENT,
+	SP_BPQUEUE_SUCCESS
+} SP_BPQUEUE_MSG;
+
+/**
+ * Allocates a new queue in the memory.
+ * Given the maximal number of elements that the queue can contain.
+ * 
+ * @param maxSize - an integer 
+ * @return 
+ * NULL in case allocation failure ocurred ############# or maxSize<0 ?
+ * Otherwise, a new queue which can contains at most
+ * maxSize of elements is returned
+ */
+SPBPQueue* spBPQueueCreate(int maxSize);
+
+/**
+ * Allocates a copy of the given queue.
+ *
+ * Given the queue source, the function returns a
+ * new queue (q') such that:
+ * the queue and q' have tha same maxSize
+ * the queue and q' have the same number of elements
+ * the i'th element of q' and the i'th element of queue are the same
+ *
+ * @param source the source of the queue
+ * @assert (source != NUlL)
+ * @return 
+ * NULL in case memory allocation occurs
+ * Others a copy of source is returned.
+ */
+SPBPQueue* spBPQueueCopy(SPBPQueue* source);
+
+/**
+ * Free all memory allocation associated with queue
+ * @param source - the source of the queue
+ */
+void spBPQueueDestroy(SPBPQueue* source);
+
+/**
+ *
+ * @param source
+ */
+void spBPQueueClear(SPBPQueue* source);
+
+/**
+ *  A getter of the number of elements in the queue.
+ *
+ * @param source - the source of the queue
+ * @return 
+ * The number of elements in the queue.
+ */
+int spBPQueueSize(SPBPQueue* source);
+
+/**
+ * A getter of the maximal number of elements which the queue can contains.
+ *
+ * @param source - the source of the queue
+ * @return
+ * The maximal number of elements which the queue can contains.
+ */
+int spBPQueueGetMaxSize(SPBPQueue* source);
+
+/**
+ *
+ * @param source
+ * @param index
+ * @param value
+ * @return
+ */
+SP_BPQUEUE_MSG spBPQueueEnqueue(SPBPQueue* source, int index, double value);
+
+/**
+ *
+ * @param source
+ * @return
+ */
+SP_BPQUEUE_MSG spBPQueueDequeue(SPBPQueue* source);
+
+/**
+ *
+ * @param source
+ * @param res
+ * @return
+ */
+SP_BPQUEUE_MSG spBPQueuePeek(SPBPQueue* source, BPQueueElement* res);
+
+/**
+ *
+ * @param source
+ * @param res
+ * @return
+ */
+SP_BPQUEUE_MSG spBPQueuePeekLast(SPBPQueue* source, BPQueueElement* res);
+
+/**
+ *
+ * @param source
+ * @return
+ */
+double spBPQueueMinValue(SPBPQueue* source);
+
+/**
+ *
+ * @param source
+ * @return
+ */
+double spBPQueueMaxValue(SPBPQueue* source);
+
+/**
+ * The function returns True if the queue is empty,otherwise False.
+ *
+ * @param source - the source of the queue
+ * @return
+ * True - if the number of elements in the queue is zero.
+ * Otherwise - False.
+ */
+bool spBPQueueIsEmpty(SPBPQueue* source);
+
+/**
+ * The function returns True if the queue is full,otherwise False.
+ *
+ * @param source - the source of the queue
+ * @return
+ * True - if the number of elements in the queue is the 
+ * maximal number of elements which the queue can contains.
+ * Otherwise - False.
+ */
+bool spBPQueueIsFull(SPBPQueue* source);
+
+#endif
