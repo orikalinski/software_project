@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.6)
 project(final_project)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS -std=c++11)
 
-#set(SOURCE_FILES SPLogger.c unit_tests/sp_logger_unit_test.c)
-set(SOURCE_FILES sp_utils.c SPPoint.c SPKDArray.c SPKDTree.c)
-add_executable(final_project ${SOURCE_FILES})
+add_custom_target(
+        final_project
+        COMMAND make
+        WORKING_DIRECTORY /home/ori/computer_sience/software_project/final_project
+)
 
-target_link_libraries(final_project m)

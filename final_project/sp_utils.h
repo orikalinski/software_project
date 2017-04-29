@@ -9,6 +9,7 @@
 
 #include <malloc.h>
 #include "SPPoint.h"
+#include "SPBPriorityQueue.h"
 
 typedef struct sort_element SortElement;
 

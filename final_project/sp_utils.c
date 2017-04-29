@@ -3,6 +3,7 @@
 //
 
 #include <assert.h>
+#include <stdlib.h>
 #include "sp_utils.h"
 
 struct sort_element {

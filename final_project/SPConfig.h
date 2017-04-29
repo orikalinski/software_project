@@ -28,7 +28,7 @@ typedef enum sp_config_msg_t {
 	SP_CONFIG_SUCCESS
 } SP_CONFIG_MSG;
 
-typedef struct sp_config_t*  SPConfig;
+typedef struct sp_config_t* SPConfig;
 
 /**
  * Creates a new system configuration struct. The configuration struct
@@ -122,6 +122,14 @@ int spConfigGetNumOfFeatures(const SPConfig config, SP_CONFIG_MSG* msg);
  * - SP_CONFIG_SUCCESS - in case of success
  */
 int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG* msg);
+
+int spConfigGetKNN(const SPConfig config, SP_CONFIG_MSG* msg);
+
+int spConfigGetNumberOfSimilarImages(const SPConfig config, SP_CONFIG_MSG *msg);
+
+SP_LOGGER_LEVEL spConfigGetLoggerLevel(const SPConfig config, SP_CONFIG_MSG *msg);
+
+SP_CONFIG_MSG spConfigGetLoggerFileName(char *loggerFileName, const SPConfig config);
 
 /**
  * Given an index 'index' the function stores in imagePath the full path of the

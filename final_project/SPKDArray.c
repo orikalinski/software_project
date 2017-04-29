@@ -23,7 +23,7 @@ void initKDArray(SPPoint **arr, int size, SPKDArray *kdArr) {
     SortElement *element;
     for (; i < dim; i++) {
         for (j = 0; j < size; j++) {
-            element = elementCreate(spPointGetIndex(arr[j]), spPointGetData(arr[j], i));
+            element = elementCreate(j, spPointGetData(arr[j], i));
             elements[j] = element;
         }
         quicksort(elements, 0, size - 1);
@@ -43,11 +43,14 @@ double getMedianFromKDArray(SPKDArray kdArr, int coor){
     SortElement **elements = (SortElement **) malloc(size * sizeof(SortElement *));
     SortElement *element;
     for (; j < size; j++) {
-        element = elementCreate(spPointGetIndex(kdArr.points[j]),
-                                spPointGetData(kdArr.points[j], coor));
+        element = elementCreate(j, spPointGetData(kdArr.points[j], coor));
         elements[j] = element;
     }
-    return findMedian(elements, size);
+    double median = findMedian(elements, size);
+    for (j = 0; j < size; j++)
+        free(elements[j]);
+    free(elements);
+    return median;
 }
 
 int getMaxSpreadDim(SPKDArray kdArr){

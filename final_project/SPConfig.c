@@ -36,6 +36,10 @@ const int loggerLevelArray[] = {1, 2, 3, 4};
 
 const char *suffixArray[] = {".jpg", ".png", ".bmp", ".gif"};
 
+enum splitMethods {
+    RANDOM, MAX_SPREAD, INCREMENTAL
+};
+
 struct sp_config_t {
     int spPCADimension;
     char *spPCAFilename;
@@ -44,10 +48,8 @@ struct sp_config_t {
     bool spMinimalGUI;
     int spNumOfSimilarImages;
     int spKNN;
-    enum {
-        RANDOM, MAX_SPREAD, INCREMENTAL
-    } spKDTreeSplitMethod;
-    int spLoggerLevel;
+    enum splitMethods spKDTreeSplitMethod;
+    SP_LOGGER_LEVEL spLoggerLevel;
     char *spLoggerFilename;
     char *spImagesDirectory;
     char *spImagesPrefix;
@@ -62,8 +64,8 @@ void initializeStruct(SPConfig conf) {
     conf->spMinimalGUI = false;
     conf->spNumOfSimilarImages = 1;
     conf->spKNN = 1;
-    conf->spKDTreeSplitMethod = 1;
-    conf->spLoggerLevel = 3;
+    conf->spKDTreeSplitMethod = MAX_SPREAD;
+    conf->spLoggerLevel = SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL;
     conf->spPCAFilename = (char *) malloc(MAX_SIZE);
     strcpy(conf->spPCAFilename, "pca.yml");
     conf->spLoggerFilename = (char *) malloc(MAX_SIZE);
@@ -79,8 +81,8 @@ void initializeStruct(SPConfig conf) {
 }
 
 bool isCommentOrBlankLine(char *line) {
-    char c;
-    for (int i = 0; i < strlen(line); i++) {
+    size_t i;
+    for (i = 0; i < strlen(line); i++) {
         if (isspace(line[i])) continue;
         if (line[i] == '#')
             return true;
@@ -108,9 +110,10 @@ void strip(char *strValue, char *dest) {
 }
 
 bool isValidRow(char *paramName, char *paramValue) {
-    for (int i = 0; i < strlen(paramName); i++)
+    size_t i;
+    for (i = 0; i < strlen(paramName); i++)
         if (isspace(paramName[i])) return false;
-    for (int i = 0; i < strlen(paramValue); i++)
+    for (i = 0; i < strlen(paramValue); i++)
         if (isspace(paramValue[i])) return false;
     return true;
 }
@@ -152,11 +155,11 @@ bool isContainsString(const char **arr, char *value, int size) {
 SP_CONFIG_MSG setAttribute(SPConfig conf, char *paramName, char *paramValue) {
     if (!strcmp(paramName, "spExtractionMode")) {
         VALID_BOOL(paramValue)
-        conf->spExtractionMode = paramValue == "true" ? true : false;
+        conf->spExtractionMode = strcmp(paramValue, "true") == 0 ? true : false;
     }
     if (!strcmp(paramName, "spMinimalGUI")) {
         VALID_BOOL(paramValue)
-        conf->spMinimalGUI = paramValue == "true" ? true : false;;
+        conf->spMinimalGUI = strcmp(paramValue, "true") == 0 ? true : false;;
     }
     if (!strcmp(paramName, "spPCAFilename")) strcpy(conf->spPCAFilename, paramValue);
     if (!strcmp(paramName, "spLoggerFilename")) strcpy(conf->spLoggerFilename, paramValue);
@@ -177,7 +180,7 @@ SP_CONFIG_MSG setAttribute(SPConfig conf, char *paramName, char *paramValue) {
         VALID_INT(paramValue)
         int paramValueInt = atoi(paramValue);
         VALID_INT_RANGE(splitMethodArray, paramValueInt, 3);
-        conf->spKDTreeSplitMethod = paramValueInt;
+        conf->spKDTreeSplitMethod = (enum splitMethods)paramValueInt;
     }
     if (!strcmp(paramName, "spNumOfFeatures")) {
         VALID_INT(paramValue)
@@ -213,12 +216,12 @@ SPConfig spConfigCreate(const char *filename, SP_CONFIG_MSG *msg) {
     }
     FILE *file = fopen(filename, "r");
     if (!file) {
-        char *d = strcmp(filename, "spcbir.config") ? "" : "default ";
+        const char *d = strcmp(filename, "spcbir.config") ? "" : "default ";
         printf("The %sconfiguration file %s couldn’t be open\n", d, filename);
         *msg = SP_CONFIG_CANNOT_OPEN_FILE;
         return NULL;
     }
-    SPConfig config = malloc(sizeof(*(SPConfig) NULL));
+    SPConfig config = (SPConfig)malloc(sizeof(*(SPConfig) NULL));
     if (!config) {
         *msg = SP_CONFIG_ALLOC_FAIL;
         return NULL;
@@ -292,6 +295,27 @@ int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG *msg) {
     return config->spPCADimension;
 }
 
+int spConfigGetKNN(const SPConfig config, SP_CONFIG_MSG *msg) {
+    PRE_GETTER(config, msg, -1)
+    return config->spKNN;
+}
+
+int spConfigGetNumberOfSimilarImages(const SPConfig config, SP_CONFIG_MSG *msg) {
+    PRE_GETTER(config, msg, -1)
+    return config->spNumOfSimilarImages;
+}
+
+SP_LOGGER_LEVEL spConfigGetLoggerLevel(const SPConfig config, SP_CONFIG_MSG *msg) {
+    PRE_GETTER(config, msg, -1)
+    return config->spLoggerLevel;
+}
+
+SP_CONFIG_MSG spConfigGetLoggerFileName(char *loggerFileName, const SPConfig config) {
+    if (!config) return SP_CONFIG_INVALID_ARGUMENT;
+    strcpy(loggerFileName, config->spLoggerFilename);
+    return SP_CONFIG_SUCCESS;
+}
+
 SP_CONFIG_MSG spConfigGetImagePath(char *imagePath, const SPConfig config,
                                    int index) {
     if (!imagePath || !config) return SP_CONFIG_INVALID_ARGUMENT;
@@ -307,14 +331,16 @@ SP_CONFIG_MSG spConfigGetImagePath(char *imagePath, const SPConfig config,
         return SP_CONFIG_INDEX_OUT_OF_RANGE;
     }
     int j = 0;
-    for (int i = 0; i < strlen(directory); i++)
+    size_t i;
+    for (i = 0; i < strlen(directory); i++)
         imagePath[j++] = directory[i];
-    for (int i = 0; i < strlen(prefix); i++)
+    for (i = 0; i < strlen(prefix); i++)
         imagePath[j++] = prefix[i];
-    for (int i = 0; i < strlen(strIndex); i++)
+    for (i = 0; i < strlen(strIndex); i++)
         imagePath[j++] = strIndex[i];
-    for (int i = 0; i < strlen(suffix); i++)
+    for (i = 0; i < strlen(suffix); i++)
         imagePath[j++] = suffix[i];
+    imagePath[j] = '\0';
     free(msg);
     return SP_CONFIG_SUCCESS;
 }
@@ -324,9 +350,10 @@ SP_CONFIG_MSG spConfigGetPCAPath(char *pcaPath, const SPConfig config) {
     char *directory = config->spImagesDirectory;
     char *pcaFileName = config->spPCAFilename;
     int j = 0;
-    for (int i = 0; i < strlen(directory); i++)
+    size_t i;
+    for (i = 0; i < strlen(directory); i++)
         pcaPath[j++] = directory[i];
-    for (int i = 0; i < strlen(pcaFileName); i++)
+    for (i = 0; i < strlen(pcaFileName); i++)
         pcaPath[j++] = pcaFileName[i];
     return SP_CONFIG_SUCCESS;
 }
