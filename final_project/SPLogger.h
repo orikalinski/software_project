@@ -26,25 +26,25 @@
 
 /** A type used to decide the level of the logger**/
 typedef enum sp_logger_level_t {
-	SP_LOGGER_ERROR_LEVEL, //Error level
-	SP_LOGGER_WARNING_ERROR_LEVEL, //Warning level
-	SP_LOGGER_INFO_WARNING_ERROR_LEVEL, //Info level
-	SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL //Debug level
+    SP_LOGGER_ERROR_LEVEL, //Error level
+    SP_LOGGER_WARNING_ERROR_LEVEL, //Warning level
+    SP_LOGGER_INFO_WARNING_ERROR_LEVEL, //Info level
+    SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL //Debug level
 } SP_LOGGER_LEVEL;
 
 /** A type used to indicate errors in function calls **/
 typedef enum sp_logger_msg_t {
-	SP_LOGGER_CANNOT_OPEN_FILE,
-	SP_LOGGER_INVAlID_ARGUMENT,
-	SP_LOGGER_OUT_OF_MEMORY,
-	SP_LOGGER_UNDEFINED,
-	SP_LOGGER_DEFINED,
-	SP_LOGGER_WRITE_FAIL,
-	SP_LOGGER_SUCCESS
+    SP_LOGGER_CANNOT_OPEN_FILE,
+    SP_LOGGER_INVAlID_ARGUMENT,
+    SP_LOGGER_OUT_OF_MEMORY,
+    SP_LOGGER_UNDEFINED,
+    SP_LOGGER_DEFINED,
+    SP_LOGGER_WRITE_FAIL,
+    SP_LOGGER_SUCCESS
 } SP_LOGGER_MSG;
 
 /** A type used for defining the logger**/
-typedef struct sp_logger_t* SPLogger;
+typedef struct sp_logger_t *SPLogger;
 
 /**
  * Creates a logger. This function should be called once, prior
@@ -61,7 +61,7 @@ typedef struct sp_logger_t* SPLogger;
  * SP_LOGGER_CANNOT_OPEN_FILE 	- If the file given by filename cannot be opened
  * SP_LOGGER_SUCCESS 			- In case the logger has been successfully opened
  */
-SP_LOGGER_MSG spLoggerCreate(const char* filename, SP_LOGGER_LEVEL level);
+SP_LOGGER_MSG spLoggerCreate(const char *filename, SP_LOGGER_LEVEL level);
 
 /**
  * Frees all memory allocated for the logger. If the logger is not defined
@@ -104,8 +104,8 @@ void spLoggerDestroy();
  * SP_LOGGER_WRITE_FAIL			- If Write failure occurred
  * SP_LOGGER_SUCCESS			- otherwise
  */
-SP_LOGGER_MSG spLoggerPrintError(const char* msg, const char* file,
-		const char* function, const int line);
+SP_LOGGER_MSG spLoggerPrintError(const char *msg, const char *file,
+                                 const char *function, const int line);
 
 /**
  * 	Prints warning message. The warning message format is given below:
@@ -141,8 +141,9 @@ SP_LOGGER_MSG spLoggerPrintError(const char* msg, const char* file,
  * SP_LOGGER_WRITE_FAIL			- If write failure occurred
  * SP_LOGGER_SUCCESS			- otherwise
  */
-SP_LOGGER_MSG spLoggerPrintWarning(const char* msg, const char* file,
-		const char* function, const int line);
+SP_LOGGER_MSG spLoggerPrintWarning(const char *msg, const char *file,
+                                   const char *function, const int line);
+
 /**
  * 	Prints Info message. The info message format is given below:
  * 	---INFO---
@@ -164,7 +165,7 @@ SP_LOGGER_MSG spLoggerPrintWarning(const char* msg, const char* file,
  * SP_LOGGER_WRITE_FAIL			- If Write failure occurred
  * SP_LOGGER_SUCCESS			- otherwise
  */
-SP_LOGGER_MSG spLoggerPrintInfo(const char* msg);
+SP_LOGGER_MSG spLoggerPrintInfo(const char *msg);
 
 /**
  * 	Prints the debug message. The debug message format is given below:
@@ -198,8 +199,8 @@ SP_LOGGER_MSG spLoggerPrintInfo(const char* msg);
  * SP_LOGGER_WRITE_FAIL			- If Write failure occurred
  * SP_LOGGER_SUCCESS			- otherwise
  */
-SP_LOGGER_MSG spLoggerPrintDebug(const char* msg, const char* file,
-		const char* function, const int line);
+SP_LOGGER_MSG spLoggerPrintDebug(const char *msg, const char *file,
+                                 const char *function, const int line);
 
 /**
  * The given message is printed. A new line is printed at the end of msg
@@ -212,6 +213,6 @@ SP_LOGGER_MSG spLoggerPrintDebug(const char* msg, const char* file,
  * SP_LOGGER_WRITE_FAIL			- If Write failure occurred
  * SP_LOGGER_SUCCESS			- otherwise
  */
-SP_LOGGER_MSG spLoggerPrintMsg(const char* msg);
+SP_LOGGER_MSG spLoggerPrintMsg(const char *msg);
 
 #endif

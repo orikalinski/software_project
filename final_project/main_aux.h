@@ -15,3 +15,5 @@ extern "C" {
 }
 
 int getBestK(int *input, int n, int k, int *bestK);
+
+SPPoint **processPoints(SPConfig config, int numberOfImages, sp::ImageProc imageProc, int *numOfFeatures);

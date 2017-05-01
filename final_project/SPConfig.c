@@ -231,14 +231,12 @@ SPConfig spConfigCreate(const char *filename, SP_CONFIG_MSG *msg) {
     int i = 0;
     size_t len = 0;
     ssize_t read;
-    char *paramName;
-    char *paramValue;
+    char *paramName = (char *) malloc(MAX_SIZE);
+    char *paramValue = (char *) malloc(MAX_SIZE);
     SP_CONFIG_MSG attributeMsg;
     while ((read = getline(&line, &len, file)) != -1) {
         i++;
         if (isCommentOrBlankLine(line)) continue;
-        paramName = (char *) malloc(MAX_SIZE);
-        paramValue = (char *) malloc(MAX_SIZE);
         if (!parseRow(line, &paramName, &paramValue)) {
             free(paramName);
             free(paramValue);
@@ -247,8 +245,6 @@ SPConfig spConfigCreate(const char *filename, SP_CONFIG_MSG *msg) {
             return NULL;
         }
         attributeMsg = setAttribute(config, paramName, paramValue);
-        free(paramName);
-        free(paramValue);
         if (attributeMsg != SP_CONFIG_SUCCESS) {
             RELEASE_MEMORY_AFTER_ERROR
             *msg = attributeMsg;
@@ -256,6 +252,8 @@ SPConfig spConfigCreate(const char *filename, SP_CONFIG_MSG *msg) {
             return NULL;
         }
     }
+    free(paramName);
+    free(paramValue);
     free(line);
     fclose(file);
     if (!strlen(config->spImagesDirectory))
@@ -314,22 +312,19 @@ SP_CONFIG_MSG spConfigGetLoggerFileName(char *loggerFileName, const SPConfig con
     if (!config) return SP_CONFIG_INVALID_ARGUMENT;
     strcpy(loggerFileName, config->spLoggerFilename);
     return SP_CONFIG_SUCCESS;
+
 }
 
-SP_CONFIG_MSG spConfigGetImagePath(char *imagePath, const SPConfig config,
-                                   int index) {
+SP_CONFIG_MSG getImagePath(char *imagePath, char *suffix, const SPConfig config, int index){
     if (!imagePath || !config) return SP_CONFIG_INVALID_ARGUMENT;
-    SP_CONFIG_MSG *msg = (SP_CONFIG_MSG *) malloc(sizeof(SP_CONFIG_MSG));
-    int numOfImages = spConfigGetNumOfImages(config, msg);
+    SP_CONFIG_MSG msg;
+    int numOfImages = spConfigGetNumOfImages(config, &msg);
     char *directory = config->spImagesDirectory;
     char *prefix = config->spImagesPrefix;
-    char *suffix = config->spImagesSuffix;
     char strIndex[MAX_SIZE];
     sprintf(strIndex, "%d", index);
-    if (numOfImages > 0 && index > numOfImages) {
-        free(msg);
+    if (numOfImages > 0 && index > numOfImages)
         return SP_CONFIG_INDEX_OUT_OF_RANGE;
-    }
     int j = 0;
     size_t i;
     for (i = 0; i < strlen(directory); i++)
@@ -341,8 +336,17 @@ SP_CONFIG_MSG spConfigGetImagePath(char *imagePath, const SPConfig config,
     for (i = 0; i < strlen(suffix); i++)
         imagePath[j++] = suffix[i];
     imagePath[j] = '\0';
-    free(msg);
     return SP_CONFIG_SUCCESS;
+}
+
+SP_CONFIG_MSG spConfigGetImagePath(char *imagePath, const SPConfig config,
+                                   int index) {
+    return getImagePath(imagePath, config->spImagesSuffix, config, index);
+}
+
+SP_CONFIG_MSG spConfigGetImageFeatPath(char *imageFeatPath, const SPConfig config,
+                                   int index) {
+    return getImagePath(imageFeatPath, ".feats", config, index);
 }
 
 SP_CONFIG_MSG spConfigGetPCAPath(char *pcaPath, const SPConfig config) {

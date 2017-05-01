@@ -1,5 +1,5 @@
-#include <iostream>
 #include <string.h>
+#include <stdio.h>
 
 #include "SPImageProc.h"
 #include "main_aux.h"
@@ -26,30 +26,18 @@ int main(int argc, char *argv[]) {
     if (msg != SP_CONFIG_SUCCESS) return 1;
     spLoggerCreate(loggerFileName, loggerLevel);
     sp::ImageProc imageProc(config);
-    int i = 0, j = 0, m = 0;
-    int numOfFeats;
-    SPPoint **currentFeatures;
-    SPPoint **allFeatures;
+    int m, j;
     int numberOfImages;
-    char imagePath[MAX_SIZE];
-    char queryPath[MAX_SIZE];
     numberOfImages = spConfigGetNumOfImages(config, &msg);
     if (msg != SP_CONFIG_SUCCESS)
         return 1;
-    if ((msg = spConfigGetImagePath(imagePath, config, i)) != SP_CONFIG_SUCCESS) return 1;
-    allFeatures = imageProc.getImageFeatures(imagePath, i, &numOfFeats);
-    m += numOfFeats;
-    for (i = 1; i < numberOfImages; i++) {
-        msg = spConfigGetImagePath(imagePath, config, i);
-        if (msg != SP_CONFIG_SUCCESS) return 1;
-        currentFeatures = imageProc.getImageFeatures(imagePath, i, &numOfFeats);
-        allFeatures = (SPPoint **)realloc(allFeatures, (m + numOfFeats) * sizeof(SPPoint *));
-        for (j = 0; j < numOfFeats; j++)
-            allFeatures[m + j] = currentFeatures[j];
-        m += numOfFeats;
-    }
+    SPPoint **allFeatures = processPoints(config, numberOfImages, imageProc, &m);
+    j = 0;
     KDTreeNode *root = initKDTree(allFeatures, m);
     int *nearestIndexes;
+    int numOfFeats;
+    SPPoint **queryFeatures;
+    char queryPath[MAX_SIZE], imagePath[MAX_SIZE];;
     int *counterPerImage = (int *)malloc(sizeof(int) * numberOfImages);
     int k = spConfigGetKNN(config, &msg);
     if (msg != SP_CONFIG_SUCCESS)
@@ -67,12 +55,13 @@ int main(int argc, char *argv[]) {
         scanf("%s", queryPath);
         if (strcmp(queryPath, "<>") == 0)
             break;
-        currentFeatures = imageProc.getImageFeatures(queryPath, -1, &numOfFeats);
+        queryFeatures = imageProc.getImageFeatures(queryPath, -1, &numOfFeats);
         for (j = 0; j < numOfFeats; j++) {
-            nearestIndexes = kNearestNeighborSearch(config, root, currentFeatures[j]);
+            nearestIndexes = kNearestNeighborSearch(config, root, queryFeatures[j]);
             for (m = 0; m < k; m++){
                 counterPerImage[nearestIndexes[m]] += 1;
             }
+            free(nearestIndexes);
         }
 
         getBestK(counterPerImage, numberOfImages, numberOfSimilarImages, bestK);
@@ -88,7 +77,14 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-
     spConfigDestroy(config);
+    spLoggerDestroy();
+    free(allFeatures);
+    for (j = 0; j < numOfFeats; j++)
+        spPointDestroy(queryFeatures[j]);
+    free(queryFeatures);
+    free(counterPerImage);
+    free(bestK);
+    destroyKDTree(root);
     return 0;
 }

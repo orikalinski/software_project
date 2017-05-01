@@ -21,11 +21,13 @@ struct kd_tree_node {
     SPPoint *point;
 };
 
-void buildKDTree(SPKDArray kdArr, KDTreeNode *kdNode, int spKDTreeSplitMethod);
+void buildKDTree(SPKDArray kdArr, KDTreeNode *kdNode, int spKDTreeSplitMethod, bool isRoot);
 
 KDTreeNode *initKDTree(SPPoint **arr, int size);
 
-bool isLeaf(KDTreeNode node);
+bool isLeaf(KDTreeNode *node);
+
+void destroyKDTree(KDTreeNode *curr);
 
 void kNearestNeighbors(KDTreeNode *curr, SPBPQueue *bpq, SPPoint *P);
 

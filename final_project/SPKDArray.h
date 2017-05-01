@@ -21,6 +21,8 @@ void mallocAndPopulateKDArray(SPKDArray *kdArr, int numberOfPoints,
 
 void initKDArray(SPPoint **arr, int size, SPKDArray *kdArr);
 
+void destroyKDArray(SPKDArray kdArr, bool isRoot);
+
 double getMedianFromKDArray(SPKDArray kdArr, int coor);
 
 int getMaxSpreadDim(SPKDArray kdArr);

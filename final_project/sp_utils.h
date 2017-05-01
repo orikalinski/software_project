@@ -13,10 +13,17 @@
 
 typedef struct sort_element SortElement;
 
-SortElement *elementCreate(int index, double value);
+struct sort_element {
+    int index;
+    double value;
+};
 
-int elementGetIndex(SortElement *element);
+SortElement elementCreate(int index, double value);
 
-void quicksort(SortElement **valuesArray, int low, int high);
+int elementGetIndex(SortElement element);
 
-double findMedian(SortElement **valuesArray, int size);
+size_t elementGetSize();
+
+void quicksort(SortElement *valuesArray, int low, int high);
+
+double findMedian(SortElement *valuesArray, int size);

@@ -15,20 +15,20 @@
  */
 
 typedef enum sp_config_msg_t {
-	SP_CONFIG_MISSING_DIR,
-	SP_CONFIG_MISSING_PREFIX,
-	SP_CONFIG_MISSING_SUFFIX,
-	SP_CONFIG_MISSING_NUM_IMAGES,
-	SP_CONFIG_CANNOT_OPEN_FILE,
-	SP_CONFIG_ALLOC_FAIL,
-	SP_CONFIG_INVALID_INTEGER,
-	SP_CONFIG_INVALID_STRING,
-	SP_CONFIG_INVALID_ARGUMENT,
-	SP_CONFIG_INDEX_OUT_OF_RANGE,
-	SP_CONFIG_SUCCESS
+    SP_CONFIG_MISSING_DIR,
+    SP_CONFIG_MISSING_PREFIX,
+    SP_CONFIG_MISSING_SUFFIX,
+    SP_CONFIG_MISSING_NUM_IMAGES,
+    SP_CONFIG_CANNOT_OPEN_FILE,
+    SP_CONFIG_ALLOC_FAIL,
+    SP_CONFIG_INVALID_INTEGER,
+    SP_CONFIG_INVALID_STRING,
+    SP_CONFIG_INVALID_ARGUMENT,
+    SP_CONFIG_INDEX_OUT_OF_RANGE,
+    SP_CONFIG_SUCCESS
 } SP_CONFIG_MSG;
 
-typedef struct sp_config_t* SPConfig;
+typedef struct sp_config_t *SPConfig;
 
 /**
  * Creates a new system configuration struct. The configuration struct
@@ -54,7 +54,7 @@ typedef struct sp_config_t* SPConfig;
  *
  *
  */
-SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg);
+SPConfig spConfigCreate(const char *filename, SP_CONFIG_MSG *msg);
 
 /*
  * Returns true if spExtractionMode = true, false otherwise.
@@ -67,7 +67,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg);
  * - SP_CONFIG_INVALID_ARGUMENT - if config == NULL
  * - SP_CONFIG_SUCCESS - in case of success
  */
-bool spConfigIsExtractionMode(const SPConfig config, SP_CONFIG_MSG* msg);
+bool spConfigIsExtractionMode(const SPConfig config, SP_CONFIG_MSG *msg);
 
 /*
  * Returns true if spMinimalGUI = true, false otherwise.
@@ -80,7 +80,7 @@ bool spConfigIsExtractionMode(const SPConfig config, SP_CONFIG_MSG* msg);
  * - SP_CONFIG_INVALID_ARGUMENT - if config == NULL
  * - SP_CONFIG_SUCCESS - in case of success
  */
-bool spConfigMinimalGui(const SPConfig config, SP_CONFIG_MSG* msg);
+bool spConfigMinimalGui(const SPConfig config, SP_CONFIG_MSG *msg);
 
 /*
  * Returns the number of images set in the configuration file, i.e the value
@@ -94,7 +94,7 @@ bool spConfigMinimalGui(const SPConfig config, SP_CONFIG_MSG* msg);
  * - SP_CONFIG_INVALID_ARGUMENT - if config == NULL
  * - SP_CONFIG_SUCCESS - in case of success
  */
-int spConfigGetNumOfImages(const SPConfig config, SP_CONFIG_MSG* msg);
+int spConfigGetNumOfImages(const SPConfig config, SP_CONFIG_MSG *msg);
 
 /*
  * Returns the number of features to be extracted. i.e the value
@@ -108,7 +108,7 @@ int spConfigGetNumOfImages(const SPConfig config, SP_CONFIG_MSG* msg);
  * - SP_CONFIG_INVALID_ARGUMENT - if config == NULL
  * - SP_CONFIG_SUCCESS - in case of success
  */
-int spConfigGetNumOfFeatures(const SPConfig config, SP_CONFIG_MSG* msg);
+int spConfigGetNumOfFeatures(const SPConfig config, SP_CONFIG_MSG *msg);
 
 /**
  * Returns the dimension of the PCA. i.e the value of spPCADimension.
@@ -121,9 +121,9 @@ int spConfigGetNumOfFeatures(const SPConfig config, SP_CONFIG_MSG* msg);
  * - SP_CONFIG_INVALID_ARGUMENT - if config == NULL
  * - SP_CONFIG_SUCCESS - in case of success
  */
-int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG* msg);
+int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG *msg);
 
-int spConfigGetKNN(const SPConfig config, SP_CONFIG_MSG* msg);
+int spConfigGetKNN(const SPConfig config, SP_CONFIG_MSG *msg);
 
 int spConfigGetNumberOfSimilarImages(const SPConfig config, SP_CONFIG_MSG *msg);
 
@@ -156,8 +156,11 @@ SP_CONFIG_MSG spConfigGetLoggerFileName(char *loggerFileName, const SPConfig con
  * - SP_CONFIG_INDEX_OUT_OF_RANGE - if index >= spNumOfImages
  * - SP_CONFIG_SUCCESS - in case of success
  */
-SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
-		int index);
+SP_CONFIG_MSG spConfigGetImagePath(char *imagePath, const SPConfig config,
+                                   int index);
+
+SP_CONFIG_MSG spConfigGetImageFeatPath(char *imageFeatPath, const SPConfig config,
+                                       int index);
 
 /**
  * The function stores in pcaPath the full path of the pca file.
@@ -175,7 +178,7 @@ SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
  *  - SP_CONFIG_INVALID_ARGUMENT - if imagePath == NULL or config == NULL
  *  - SP_CONFIG_SUCCESS - in case of success
  */
-SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
+SP_CONFIG_MSG spConfigGetPCAPath(char *pcaPath, const SPConfig config);
 
 /**
  * Frees all memory resources associate with config. 

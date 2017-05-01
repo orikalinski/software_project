@@ -19,8 +19,8 @@ void initKDArray(SPPoint **arr, int size, SPKDArray *kdArr) {
     int i = 0, j;
     int dim = spPointGetDimension(arr[0]);
     mallocAndPopulateKDArray(kdArr, size, dim, arr);
-    SortElement **elements = (SortElement **) malloc(size * sizeof(SortElement *));
-    SortElement *element;
+    SortElement *elements = (SortElement *) malloc(size * elementGetSize());
+    SortElement element;
     for (; i < dim; i++) {
         for (j = 0; j < size; j++) {
             element = elementCreate(j, spPointGetData(arr[j], i));
@@ -31,40 +31,46 @@ void initKDArray(SPPoint **arr, int size, SPKDArray *kdArr) {
         for (j = 0; j < size; j++) {
             kdArr->indexesMatrix[i][j] = elementGetIndex(elements[j]);
         }
-        for (j = 0; j < size; j++)
-            free(elements[j]);
     }
     free(elements);
 }
 
-double getMedianFromKDArray(SPKDArray kdArr, int coor){
+void destroyKDArray(SPKDArray kdArr, bool isRoot) {
+    int i = 0;
+    for (; i < kdArr.dim; i++) {
+        free(kdArr.indexesMatrix[i]);
+    }
+    free(kdArr.indexesMatrix);
+    if (!isRoot)
+        free(kdArr.points);
+}
+
+double getMedianFromKDArray(SPKDArray kdArr, int coor) {
     int j = 0;
     int size = kdArr.numOfPoints;
-    SortElement **elements = (SortElement **) malloc(size * sizeof(SortElement *));
-    SortElement *element;
+    SortElement *elements = (SortElement *) malloc(size * sizeof(SortElement));
+    SortElement element;
     for (; j < size; j++) {
         element = elementCreate(j, spPointGetData(kdArr.points[j], coor));
         elements[j] = element;
     }
     double median = findMedian(elements, size);
-    for (j = 0; j < size; j++)
-        free(elements[j]);
     free(elements);
     return median;
 }
 
-int getMaxSpreadDim(SPKDArray kdArr){
+int getMaxSpreadDim(SPKDArray kdArr) {
     int i = 0, j, maxSpreadDim = -1;
     double value, maximumSpread = -1, maximum = -1, minimum = INFINITY;
-    for (; i < kdArr.dim; i++){
-        for (j = 0; j < kdArr.numOfPoints; j++){
+    for (; i < kdArr.dim; i++) {
+        for (j = 0; j < kdArr.numOfPoints; j++) {
             value = spPointGetData(kdArr.points[j], i);
             if (value > maximum)
                 maximum = value;
             if (value < minimum)
                 minimum = value;
         }
-        if ((maximum - minimum) > maximumSpread){
+        if ((maximum - minimum) > maximumSpread) {
             maximumSpread = maximum - minimum;
             maxSpreadDim = i;
         }

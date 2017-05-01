@@ -9,19 +9,13 @@
 #include <string.h>
 #include <math.h>
 
-
-struct sp_point_t {
-    double *data;
-    int index;
-    int dim;
-};
-
 SPPoint *spPointCreate(double *data, int dim, int index) {
     if (data == NULL)
         return NULL;
     SPPoint *point;
     point = (SPPoint *) malloc(sizeof(SPPoint));
-    double *point_data = (double *)malloc(dim * sizeof(double));
+    double *point_data = (double *)
+            malloc(dim * sizeof(double));
     if (point == 0 || point_data == 0)
         return NULL;
     memcpy(point_data, data, dim * sizeof(double));
