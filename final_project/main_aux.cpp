@@ -41,7 +41,7 @@ int writeToFeat(SPConfig config, int numOfFeats, SPPoint **points) {
     if ((file = fopen(featFilename, "w+")) == NULL) {
         char errorMsg[MAX_SIZE];
         sprintf(errorMsg, "The file: %s couldn't be open for write\n", featFilename);
-        spLoggerPrintError(errorMsg, __FILE__, __FUNCTION__, __LINE__);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         return 1;
     }
     fwrite(&numOfFeats, sizeof(int), 1, file);
@@ -68,7 +68,7 @@ SPPoint **readFromFeat(SPConfig config, int index, int *numOfFeats) {
     if ((file = fopen(featFilename, "r")) == NULL) {
         char errorMsg[MAX_SIZE];
         sprintf(errorMsg, "The file: %s couldn't be open for read\n", featFilename);
-        spLoggerPrintError(errorMsg, __FILE__, __FUNCTION__, __LINE__);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         return NULL;
     }
     int dim;
