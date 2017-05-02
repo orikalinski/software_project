@@ -36,13 +36,15 @@ int writeToFeat(SPConfig config, int numOfFeats, SPPoint **points) {
     int dim = points[0]->dim;
     char featFilename[MAX_SIZE];
     if ((msg = spConfigGetImageFeatPath(featFilename, config, index)) != SP_CONFIG_SUCCESS) return 1;
-    int fd = open(featFilename, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-    if (fd < 0) {
-        printf("The file: %s couldn't be open for write\n", featFilename);
+    FILE *file;
+    if ((file = fopen(featFilename, "w+")) == NULL) {
+        char errorMsg[MAX_SIZE];
+        sprintf(errorMsg, "The file: %s couldn't be open for write\n", featFilename);
+        spLoggerPrintError(errorMsg, __FILE__, __FUNCTION__, __LINE__);
         return 1;
     }
-    write(fd, &numOfFeats, sizeof(int));
-    write(fd, &dim, sizeof(int));
+    fwrite(&numOfFeats, sizeof(int), 1, file);
+    fwrite(&dim, sizeof(int), 1, file);
     double *data = (double *) malloc(0);
     int j, k, currentSize = 0;
     for (j = 0; j < numOfFeats; j++) {
@@ -51,9 +53,9 @@ int writeToFeat(SPConfig config, int numOfFeats, SPPoint **points) {
             data[currentSize + k] = spPointGetData(points[j], k);
         currentSize += points[j]->dim;
     }
-    write(fd, data, currentSize * sizeof(double));
+    fwrite(data, sizeof(double), currentSize, file);
     free(data);
-    close(fd);
+    fclose(file);
     return 0;
 }
 
@@ -61,19 +63,23 @@ SPPoint **readFromFeat(SPConfig config, int index, int *numOfFeats) {
     SP_CONFIG_MSG msg;
     char featFilename[MAX_SIZE];
     if ((msg = spConfigGetImageFeatPath(featFilename, config, index)) != SP_CONFIG_SUCCESS) return NULL;
-    int fd = open(featFilename, O_RDONLY, 0777);
-    if (fd < 0) {
-        printf("The file: %s couldn't be open for write\n", featFilename);
+    FILE *file;
+    if ((file = fopen(featFilename, "r")) == NULL) {
+        char errorMsg[MAX_SIZE];
+        sprintf(errorMsg, "The file: %s couldn't be open for read\n", featFilename);
+        spLoggerPrintError(errorMsg, __FILE__, __FUNCTION__, __LINE__);
         return NULL;
     }
     int dim;
-    read(fd, numOfFeats, sizeof(int));
-    read(fd, &dim, sizeof(int));
-    double *data = (double *) malloc(sizeof(double) * *numOfFeats * dim);
-    read(fd, data, sizeof(double) * *numOfFeats * dim);
-    double *dataPerPoint = (double *) malloc(sizeof(double) * dim);
+    fread(numOfFeats, sizeof(int), 1, file);
+    fread(&dim, sizeof(int), 1, file);
+    double *data, *dataPerPoint;
+    if ((data = (double *) malloc(sizeof(double) * *numOfFeats * dim)) == NULL) return NULL;
+    fread(data, sizeof(double), *numOfFeats * dim, file);
+    if ((dataPerPoint = (double *) malloc(sizeof(double) * dim)) == NULL) return NULL;
     int j, k;
-    SPPoint **points = (SPPoint **) malloc(*numOfFeats * sizeof(SPPoint *));
+    SPPoint **points;
+    if ((points = (SPPoint **) malloc(*numOfFeats * sizeof(SPPoint *))) == NULL) return NULL;
     for (j = 0; j < *numOfFeats; j++) {
         for (k = 0; k < dim; k++)
             dataPerPoint[k] = data[j * dim + k];
@@ -81,7 +87,7 @@ SPPoint **readFromFeat(SPConfig config, int index, int *numOfFeats) {
     }
     free(data);
     free(dataPerPoint);
-    close(fd);
+    fclose(file);
     return points;
 }
 

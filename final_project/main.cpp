@@ -8,7 +8,7 @@
 int main(int argc, char *argv[]) {
     SP_CONFIG_MSG msg;
     if ((argc == 3 && strcmp(argv[1], "-c")) || (argc != 1 && argc != 3)) {
-        printf("Invalid command line : use -c <config_filename>");
+        printf("Invalid command line : use -c <config_filename>\n");
         return 1;
     }
     const char *filename = argc == 1 ? "spcbir.config" : argv[2];
