@@ -2,8 +2,8 @@ CC = gcc
 C++ = g++
 OBJS = main.o main_aux.o SPImageProc.o SPPoint.o SPBPriorityQueue.o SPConfig.o SPLogger.o SPKDTree.o SPKDArray.o sp_utils.o
 EXEC = fp
-INCLUDEPATH=/usr/local/lib/opencv-3.2.0/include/
-LIBPATH=/usr/local/lib/opencv-3.2.0/lib/
+INCLUDEPATH=/usr/local/lib/opencv-3.1.0/include/
+LIBPATH=/usr/local/lib/opencv-3.1.0/lib/
 LIBS=-lopencv_xfeatures2d -lopencv_features2d \
 -lopencv_highgui -lopencv_imgcodecs -lopencv_imgproc -lopencv_core
 
