@@ -4,6 +4,7 @@
 
 #include "main_aux.h"
 #include <fcntl.h>
+#include <dirent.h>
 
 #define MAX_SIZE 1024
 
@@ -171,6 +172,10 @@ int handleQueryImages(SPConfig config, KDTreeNode *root, sp::ImageProc imageProc
         scanf("%s", queryPath);
         if (strcmp(queryPath, "<>") == 0)
             break;
+        if (!fopen(queryPath, "r") || opendir(queryPath)) {
+            printf("The file: %s is not valid\n", queryPath);
+            continue;
+        }
         queryFeatures = imageProc.getImageFeatures(queryPath, -1, &numOfFeats);
         for (j = 0; j < numOfFeats; j++) {
             nearestIndexes = kNearestNeighborSearch(config, root, queryFeatures[j]);
