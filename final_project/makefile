@@ -22,7 +22,7 @@ main_aux.o: main_aux.h main_aux.cpp SPPoint.h SPBPriorityQueue.h SPKDTree.h
 	$(C++) $(CPP_COMP_FLAG) -I$(INCLUDEPATH) -c $*.cpp
 SPImageProc.o: SPLogger.h SPLogger.c SPImageProc.h SPImageProc.cpp SPPoint.h SPBPriorityQueue.h SPKDTree.h
 	$(C++) $(CPP_COMP_FLAG) -I$(INCLUDEPATH) -c $*.cpp
-SPPoint.o: SPPoint.c SPPoint.h 
+SPPoint.o: SPPoint.c SPPoint.h
 	$(CC) $(C_COMP_FLAG) -c $*.c
 SPBPriorityQueue.o: SPBPriorityQueue.c SPBPriorityQueue.h
 	$(CC) $(C_COMP_FLAG) -c $*.c
@@ -30,7 +30,7 @@ SPLogger.o: SPLogger.c SPLogger.h
 	$(CC) $(C_COMP_FLAG) -c $*.c
 SPConfig.o: SPConfig.c SPConfig.h
 	$(CC) $(C_COMP_FLAG) -c $*.c
-SPKDArray.o: SPKDArray.c SPKDArray.c
+SPKDArray.o: SPKDArray.c SPKDArray.h
 	$(CC) $(C_COMP_FLAG) -c $*.c
 SPKDTree.o: SPKDTree.c SPKDTree.h
 	$(CC) $(C_COMP_FLAG) -c $*.c

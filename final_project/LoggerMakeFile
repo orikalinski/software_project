@@ -1,0 +1,11 @@
+CC = gcc
+EXEC = logger_tests
+
+C_COMP_FLAG = -std=gnu99 -Wall -Wextra \
+-Werror -pedantic-errors -DNDEBUG -g
+
+$(EXEC): SPLogger.c unit_tests/sp_logger_unit_test.c
+	$(CC) $(C_COMP_FLAG) -o $@ $^
+
+clean:
+	rm -f $(EXEC)

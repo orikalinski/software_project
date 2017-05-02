@@ -6,7 +6,7 @@
 #include <math.h>
 #include "SPKDTree.h"
 
-void buildKDTree(SPKDArray kdArr, KDTreeNode *kdNode, int spKDTreeSplitMethod, bool isRoot) {
+int buildKDTree(SPKDArray kdArr, KDTreeNode *kdNode, int spKDTreeSplitMethod, bool isRoot) {
     if (kdArr.numOfPoints == 1) {
         kdNode->dim = -1;
         kdNode->val = -1;
@@ -14,7 +14,7 @@ void buildKDTree(SPKDArray kdArr, KDTreeNode *kdNode, int spKDTreeSplitMethod, b
         kdNode->right = NULL;
         kdNode->point = kdArr.points[0];
         destroyKDArray(kdArr, isRoot);
-        return;
+        return 0;
     }
     int dim;
     if (spKDTreeSplitMethod == 0)
@@ -25,23 +25,28 @@ void buildKDTree(SPKDArray kdArr, KDTreeNode *kdNode, int spKDTreeSplitMethod, b
         dim = kdNode->dim + 1;
     SPKDArray leftKDArr, rightKDArr;
     split(kdArr, dim, &leftKDArr, &rightKDArr);
-    KDTreeNode *leftNode = (KDTreeNode *) malloc(sizeof(KDTreeNode));
-    KDTreeNode *rightNode = (KDTreeNode *) malloc(sizeof(KDTreeNode));
-    buildKDTree(leftKDArr, leftNode, spKDTreeSplitMethod, false);
-    buildKDTree(rightKDArr, rightNode, spKDTreeSplitMethod, false);
+    KDTreeNode *leftNode, *rightNode;
+    if ((leftNode = (KDTreeNode *) malloc(sizeof(KDTreeNode))) == NULL) return 1;
+    if ((rightNode = (KDTreeNode *) malloc(sizeof(KDTreeNode))) == NULL) return 1;
+    if (buildKDTree(leftKDArr, leftNode, spKDTreeSplitMethod, false) != 0) return 1;
+    if (buildKDTree(rightKDArr, rightNode, spKDTreeSplitMethod, false) != 0) return 1;
     kdNode->left = leftNode;
     kdNode->right = rightNode;
     kdNode->dim = dim;
-    kdNode->val = getMedianFromKDArray(kdArr, dim);
+    double median;
+    if (getMedianFromKDArray(kdArr, dim, &median) != 0) return 1;
+    kdNode->val = median;
     kdNode->point = NULL;
     destroyKDArray(kdArr, isRoot);
+    return 0;
 }
 
 KDTreeNode *initKDTree(SPPoint **arr, int size) {
     SPKDArray kdArr;
-    initKDArray(arr, size, &kdArr);
-    KDTreeNode *root = (KDTreeNode *) malloc(sizeof(KDTreeNode));
-    buildKDTree(kdArr, root, 1, true);
+    if (initKDArray(arr, size, &kdArr) != 0) return NULL;
+    KDTreeNode *root;
+    if ((root = (KDTreeNode *) malloc(sizeof(KDTreeNode))) == NULL) return NULL;
+    if (buildKDTree(kdArr, root, 1, true) != 0) return NULL;
     return root;
 }
 
@@ -108,12 +113,4 @@ int *kNearestNeighborSearch(SPConfig conf, KDTreeNode *root, SPPoint *P) {
     free(tmp);
     spBPQueueDestroy(queue);
     return kClosest;
-}
-
-void printTree(KDTreeNode *node) {
-    printf("dim: %d, val: %f\n", node->dim, node->val);
-    if (node->left)
-        printTree(node->left);
-    if (node->right)
-        printTree(node->right);
 }

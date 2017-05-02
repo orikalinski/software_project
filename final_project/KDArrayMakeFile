@@ -1,0 +1,12 @@
+CC = gcc
+EXEC = kdarray_tests
+
+C_COMP_FLAG = -std=gnu99 -Wall -Wextra \
+-Werror -pedantic-errors -DNDEBUG -g -lm
+MATH_FLAG = -lm
+
+$(EXEC): sp_utils.c SPKDArray.c unit_tests/sp_kd_array_unit_test.c SPPoint.c
+	$(CC) $(C_COMP_FLAG) -o $@ $^ $(MATH_FLAG)
+
+clean:
+	rm -f $(EXEC)

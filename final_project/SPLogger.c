@@ -62,7 +62,8 @@ SP_LOGGER_MSG spLoggerPrintError(const char *msg, const char *file,
             "- line: %d\n"
             "- message: %s\n";
 
-    fprintf(logger->outputChannel, msgFormat, file, function, line, msg);
+    if (fprintf(logger->outputChannel, msgFormat, file, function, line, msg) < 0)
+        return SP_LOGGER_WRITE_FAIL;
     return SP_LOGGER_SUCCESS;
 }
 
@@ -80,7 +81,8 @@ SP_LOGGER_MSG spLoggerPrintWarning(const char *msg, const char *file,
             "- line: %d\n"
             "- message: %s\n";
 
-    fprintf(logger->outputChannel, msgFormat, file, function, line, msg);
+    if (fprintf(logger->outputChannel, msgFormat, file, function, line, msg) < 0)
+        return SP_LOGGER_WRITE_FAIL;
     return SP_LOGGER_SUCCESS;
 }
 
@@ -95,7 +97,8 @@ SP_LOGGER_MSG spLoggerPrintInfo(const char *msg) {
     const char *msgFormat = "---INFO---\n"
             "- message: %s\n";
 
-    fprintf(logger->outputChannel, msgFormat, msg);
+    if (fprintf(logger->outputChannel, msgFormat, msg) < 0)
+        return SP_LOGGER_WRITE_FAIL;
     return SP_LOGGER_SUCCESS;
 }
 
@@ -116,7 +119,8 @@ SP_LOGGER_MSG spLoggerPrintDebug(const char *msg, const char *file,
             "- line: %d\n"
             "- message: %s\n";
 
-    fprintf(logger->outputChannel, msgFormat, file, function, line, msg);
+    if (fprintf(logger->outputChannel, msgFormat, file, function, line, msg) < 0)
+        return SP_LOGGER_WRITE_FAIL;
     return SP_LOGGER_SUCCESS;
 }
 
@@ -126,6 +130,7 @@ SP_LOGGER_MSG spLoggerPrintMsg(const char *msg) {
     if (!msg)
         return SP_LOGGER_INVAlID_ARGUMENT;
 
-    fprintf(logger->outputChannel, "%s\n", msg);
+    if (fprintf(logger->outputChannel, "%s\n", msg) < 0)
+        return SP_LOGGER_WRITE_FAIL;
     return SP_LOGGER_SUCCESS;
 }

@@ -20,7 +20,9 @@
 #define PRINT_ERROR(file, line, message) \
     printf("File: %s\n" \
            "Line: %d\n" \
-           "Message: %s\n", file, line, message);
+           "Message: %s\n", file, line, message); \
+    return NULL;
+
 
 #define RELEASE_MEMORY_AFTER_ERROR \
     free(line); \
@@ -241,29 +243,36 @@ SPConfig spConfigCreate(const char *filename, SP_CONFIG_MSG *msg) {
             free(paramName);
             free(paramValue);
             RELEASE_MEMORY_AFTER_ERROR
+            *msg = SP_CONFIG_INVALID_CONFIGURATION_LINE;
             PRINT_ERROR(filename, i, "Invalid Configuration Line")
-            return NULL;
         }
         attributeMsg = setAttribute(config, paramName, paramValue);
         if (attributeMsg != SP_CONFIG_SUCCESS) {
             RELEASE_MEMORY_AFTER_ERROR
             *msg = attributeMsg;
             PRINT_ERROR(filename, i, "Invalid value - constraint not met")
-            return NULL;
         }
     }
     free(paramName);
     free(paramValue);
     free(line);
     fclose(file);
-    if (!strlen(config->spImagesDirectory))
+    if (!strlen(config->spImagesDirectory)) {
+        *msg = SP_CONFIG_MISSING_DIR;
         PRINT_ERROR(filename, i, "Parameter spImagesDirectory is not set")
-    else if (!strlen(config->spImagesPrefix))
+    }
+    else if (!strlen(config->spImagesPrefix)) {
+        *msg = SP_CONFIG_MISSING_PREFIX;
         PRINT_ERROR(filename, i, "Parameter spImagesPrefix is not set")
-    else if (!strlen(config->spImagesSuffix))
+    }
+    else if (!strlen(config->spImagesSuffix)) {
+        *msg = SP_CONFIG_MISSING_SUFFIX;
         PRINT_ERROR(filename, i, "Parameter spImagesSuffix is not set")
-    else if (config->spNumOfImages == -1)
+    }
+    else if (config->spNumOfImages == -1) {
+        *msg =SP_CONFIG_MISSING_NUM_IMAGES;
         PRINT_ERROR(filename, i, "Parameter spNumOfImages is not set")
+    }
     *msg = SP_CONFIG_SUCCESS;
     return config;
 }
@@ -312,7 +321,6 @@ SP_CONFIG_MSG spConfigGetLoggerFileName(char *loggerFileName, const SPConfig con
     if (!config) return SP_CONFIG_INVALID_ARGUMENT;
     strcpy(loggerFileName, config->spLoggerFilename);
     return SP_CONFIG_SUCCESS;
-
 }
 
 SP_CONFIG_MSG getImagePath(char *imagePath, char *suffix, const SPConfig config, int index){

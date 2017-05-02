@@ -35,7 +35,8 @@ int main(int argc, char *argv[]) {
     j = 0;
     KDTreeNode *root = initKDTree(allFeatures, m);
     int *nearestIndexes;
-    int numOfFeats;
+    int numOfFeats = spConfigGetNumOfFeatures(config, &msg);
+    if (msg != SP_CONFIG_SUCCESS) return 1;
     SPPoint **queryFeatures;
     char queryPath[MAX_SIZE], imagePath[MAX_SIZE];;
     int *counterPerImage = (int *)malloc(sizeof(int) * numberOfImages);

@@ -1,0 +1,11 @@
+CC = gcc
+EXEC = config_tests
+
+C_COMP_FLAG = -std=gnu99 -Wall -Wextra \
+-Werror -pedantic-errors -DNDEBUG -g
+
+$(EXEC): SPConfig.c unit_tests/sp_config_unit_test.c
+	$(CC) $(C_COMP_FLAG) -o $@ $^
+
+clean:
+	rm -f $(EXEC)

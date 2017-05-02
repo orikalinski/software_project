@@ -87,10 +87,12 @@ SPPoint **readFromFeat(SPConfig config, int index, int *numOfFeats) {
 
 SPPoint **processPoints(SPConfig config, int numberOfImages, sp::ImageProc imageProc, int *numOfFeatures) {
     int i = 0, j = 0, m = 0;
-    int numOfFeats;
+    SP_CONFIG_MSG msg;
+    int numOfConfigFeats = spConfigGetNumOfFeatures(config, &msg);
+    int numOfFeats = numOfConfigFeats;
+    if (msg != SP_CONFIG_SUCCESS) return NULL;
     SPPoint **allFeatures = (SPPoint **) malloc(0);
     char imagePath[MAX_SIZE], featFilename[MAX_SIZE];
-    SP_CONFIG_MSG msg;
     SPPoint **currentFeatures;
     bool isExtractionMode = spConfigIsExtractionMode(config, &msg);
     if (isExtractionMode) {
@@ -103,8 +105,8 @@ SPPoint **processPoints(SPConfig config, int numberOfImages, sp::ImageProc image
                 allFeatures[m + j] = currentFeatures[j];
             m += numOfFeats;
             writeToFeat(config, numOfFeats, currentFeatures);
+            numOfFeats = numOfConfigFeats;
         }
-
     } else {
         if (msg != SP_CONFIG_SUCCESS) return NULL;
         for (i = 0; i < numberOfImages; i++) {
